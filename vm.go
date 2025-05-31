@@ -411,19 +411,19 @@ func (vm *vm) run() {
 			break
 		}
 
-		// If we've got a Go context, then check if its over/terminated
-		if vm.ctx != nil {
-			ctxErr := vm.ctx.Err()
-			if ctxErr != nil {
-				interrupted = true
-				vm.interruptVal = ctxErr
-				break
-			}
-		}
-
 		vm.prg.code[vm.pc].exec(vm)
 		ticks++
 		if ticks > 10000 {
+			// If we've got a Go context, then check if its over/terminated
+			if vm.ctx != nil {
+				ctxErr := vm.ctx.Err()
+				if ctxErr != nil {
+					interrupted = true
+					vm.interruptVal = ctxErr
+					break
+				}
+			}
+
 			runtime.Gosched()
 			ticks = 0
 		}
